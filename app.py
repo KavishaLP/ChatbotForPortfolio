@@ -41,13 +41,19 @@ def get_gemini_response(question, context=""):
     try:
         if context:
             prompt = (
-                f"{context[:4000]}\n\n"
-                f"Answer this question clearly and professionally based only on the content above:\n"
-                f"{question}\n"
-                f"If the answer is not found, just say: 'Sorry, I don't have that information.'"
+                f"You are a knowledgeable assistant helping someone learn about a portfolio. "
+                f"Here is the relevant information:\n\n{context[:4000]}\n\n"
+                f"Question: {question}\n\n"
+                f"Instructions:\n"
+                f"- Answer naturally and conversationally, as if you're explaining to a colleague\n"
+                f"- Use the information provided to give accurate, helpful responses\n"
+                f"- Don't mention 'the document', 'the text', or 'based on the provided information'\n"
+                f"- Speak directly about the topics as if you have first-hand knowledge\n"
+                f"- If you cannot answer from the given information, simply say 'I don't have that information available'\n"
+                f"- Keep responses concise but informative"
             )
         else:
-            prompt = f"Answer this question: {question}"
+            prompt = f"Answer this question naturally and helpfully: {question}"
         
         # Generate a response using Gemini
         response = model.generate_content(prompt)
