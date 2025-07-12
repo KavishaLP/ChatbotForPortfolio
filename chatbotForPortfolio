@@ -1,0 +1,53 @@
+# STEP 1: Install required packages
+!pip install -q PyMuPDF google-genai
+
+# STEP 2: Import necessary libraries
+import fitz  # PyMuPDF
+from google import genai
+from google.colab import files
+
+# STEP 3: Upload your portfolio PDF
+uploaded = files.upload()  # e.g., portfolio.pdf
+
+# STEP 4: Extract text from the uploaded PDF
+def extract_text_from_pdf(pdf_path):
+    text = ""
+    with fitz.open(pdf_path) as doc:
+        for page in doc:
+            text += page.get_text()
+    return text
+
+# Replace with your uploaded file name if different
+pdf_text = extract_text_from_pdf("Hi.pdf")
+
+# STEP 5: Initialize Gemini with your API key
+client = genai.Client(api_key="AIzaSyAP46oJCMgdEqFGr0GBt3o0F3e37f4dXyA")  # 🔑 Replace this
+
+# STEP 6: Run the chatbot
+print("🤖 Gemini PDF Chatbot is ready! Ask questions based on your portfolio.")
+print("Type 'exit' to quit.\n")
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ["exit", "quit"]:
+        print("Bot: Thank you! Have a great day! 👋")
+        break
+
+    try:
+        prompt = (
+    f"{pdf_text[:4000]}\n\n"
+    f"Answer this question clearly and professionally based only on the content above:\n"
+    f"{user_input}\n"
+    f"If the answer is not found, just say: 'Sorry, I don't have that information.'"
+)
+        # Generate a response using Gemini 2.5 Pro
+        response = client.models.generate_content(
+            model="gemini-2.5-pro",
+            contents=prompt
+        )
+
+        print("Bot:", response.text.strip())
+
+    except Exception as e:
+        print("Bot: ❌ Error")
+        print("Error:", str(e))
